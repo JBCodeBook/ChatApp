@@ -30,7 +30,7 @@ void main() {
 	hint.sin_port = htons(54000);
 	hint.sin_addr.S_un.S_addr = INADDR_ANY; // Could also use inet_pton ....
 
-	bind(listening, (sockaddr*)&hint, sizeof(hint)); 
+	bind(listening, (sockaddr*)&hint, sizeof(hint));
 
 	// Tell winsock the socket is for listening
 	listen(listening, SOMAXCONN);
@@ -44,14 +44,52 @@ void main() {
 		// Handle this after finished
 	}
 
+	char host[NI_MAXHOST];		// Client's remote name
+	char service[NI_MAXHOST];	// Service (i.e. port) the client is connect on
+
+	ZeroMemory(host, NI_MAXHOST); // same as memset(host, 0, NI_MAXHOST);
+	ZeroMemory(service, NI_MAXHOST);
+
+	if (getnameinfo((sockaddr*)&client, sizeof(client), host, NI_MAXHOST, service, NI_MAXSERV, 0) == 0) {
+		cout << host << " Connected on port " << service << endl;
+	} else {
+		inet_ntop(AF_INET, &client.sin_addr, host, NI_MAXHOST);
+		cout << host << " connected on port " <<
+			ntohs(client.sin_port) << endl;
+	}
+
 	// close listening socket
+	closesocket(listening);
 
 	// while loop: accept and echo message back to client
+	char buf[4096];
+
+	while (true) {
+		ZeroMemory(buf, 4096);
+
+		// wait for client to send data
+		int bytesReceived = recv(clientSocket, buf, 4096, 0);
+		if (bytesReceived == SOCKET_ERROR) {
+			cerr << "Error in recv(). Quitting" << endl;
+			break;
+		}
+
+		if (bytesReceived == 0) {
+			cout << "client disconnected " << endl;
+			break;
+		}
+
+				// Echo message back to client
+		send(clientSocket, buf, bytesReceived + 1, 0);
+
+
+	}
 
 	// close the sock
+	closesocket(clientSocket);
 
-	// Shutdown winsock
-
+	// Cleanup winsock
+	WSACleanup();
 
 
 
