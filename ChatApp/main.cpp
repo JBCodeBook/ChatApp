@@ -18,6 +18,11 @@ void main() {
 	}
 
 	// Create a socket
+	SOCKET listening = socket(AF_INET, SOCK_STREAM, 0);
+	if (listening == INVALID_SOCKET) {
+		cerr << "can't create a socket! Quitting" << endl;
+		return;
+	}
 
 	// Bind the socket to an ip address and port
 
