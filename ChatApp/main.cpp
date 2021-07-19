@@ -33,10 +33,16 @@ void main() {
 	bind(listening, (sockaddr*)&hint, sizeof(hint)); 
 
 	// Tell winsock the socket is for listening
-	
-
+	listen(listening, SOMAXCONN);
 
 	// wait for a connection
+	sockaddr_in client;
+	int clientSize = sizeof(client);
+
+	SOCKET clientSocket = accept(listening, (sockaddr*)&client, &clientSize);
+	if (clientSocket == INVALID_SOCKET) {
+		// Handle this after finished
+	}
 
 	// close listening socket
 
