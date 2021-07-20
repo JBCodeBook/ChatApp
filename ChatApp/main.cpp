@@ -80,7 +80,10 @@ void main() {
 		}
 
 				// Echo message back to client
-		send(clientSocket, buf, bytesReceived + 1, 0);
+		if (bytesReceived > 0) {
+			cout << buf << endl;
+			send(clientSocket, buf, bytesReceived + 1, 0);
+		}
 
 
 	}
